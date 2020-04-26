@@ -32,11 +32,15 @@
             </div>
           </v-flex>
 
-          <v-flex xs7>
+          <v-flex xs7 style='margin:10px'>
+            <h2>Search Snippet</h2>
+            <v-text-field v-model="searchWord" v-on:keyup="abstruct" label="Input Keyword" style='margin-top:4px'></v-text-field>
             <v-card style="margin-top:10px" v-for="snippet in snippetList"> 
               <v-card-title primary-title>
                 <a v-bind:id='snippet.id'></a> 
-                <h3 class="headline"> {{ snippet.title }} </h3>
+                <div style="background-color:#FFCDD2">
+                  <h3 class="headline">[{{ snippet.language }}] {{ snippet.title }}</h3>
+                </div>
               </v-card-title>
               <div style="margin: 10px 20px;">
                 <textarea style='width:100%; height:300px; background-color:#efefef; padding:3px'> {{ snippet.contents }} </textarea>
@@ -161,6 +165,7 @@
             putLanguage: '',
             putContents: '',
             dialogDeleteFlag: false, 
+            searchWord: ''
           }
         },
 
@@ -184,7 +189,7 @@
             this.languagesForEdit = []
             this.languages.push('ALL')
             for (i=0;i<this.allData.length;i++) {
-              if (this.languages.indexOf(this.allData[i].language) == -1) { // 説明 4.3
+              if (this.languages.indexOf(this.allData[i].language) == -1) {
                 this.languages.push(this.allData[i].language)
                 this.languagesForEdit.push(this.allData[i].language)
               }
@@ -240,19 +245,23 @@
             document.getElementById(id).scrollIntoView(true)
           },
           goTop: function() {
-            document.getElementById("app").scrollIntoView(true) // 説明 3.26
+            document.getElementById("app").scrollIntoView(true)
           },
           abstruct: function() {
-            if (this.language == 'ALL') { // 説明 4.4
+            if (this.language == 'ALL') {
               this.snippetList = []
-              for (i=0;i<this.allData.length;i++) { // 説明 4.5
-                this.snippetList.push(this.allData[i]) // 説明 4.5
+              for (i=0;i<this.allData.length;i++) {
+                if ((this.allData[i].contents.indexOf(this.searchWord) !== -1) || (this.allData[i].title.indexOf(this.searchWord) !== -1) || (this.allData[i].language.indexOf(this.searchWord) !== -1)) { // 説明 4.7
+                  this.snippetList.push(this.allData[i])
+                }
               }   
             } else if (this.language != '') { 
               this.snippetList = []
-              for (i=0;i<this.allData.length;i++) { // 説明 4.5
-                if (this.allData[i].language == this.language) { // 説明 4.6
-                  this.snippetList.push(this.allData[i]) // 説明 4.5
+              for (i=0;i<this.allData.length;i++) {
+                if (this.allData[i].language == this.language) {
+                  if ((this.allData[i].contents.indexOf(this.searchWord) !== -1) || (this.allData[i].title.indexOf(this.searchWord) !== -1) || (this.allData[i].language.indexOf(this.searchWord) !== -1)) { // 説明 4.7
+                    this.snippetList.push(this.allData[i])
+                  }
                 }
               }   
             }
